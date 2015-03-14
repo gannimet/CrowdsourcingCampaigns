@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cc:campaign xmlns:cc="http://rn.inf.tu-dresden.de/SANE" start-date="2015-03-14" end-date="2015-03-30">
+    <cc:ground-truth score-threshold="4">
+        <cc:question score-max="4">
+            <cc:text>Wie viele Beine haben Spinnen?</cc:text>
+            <cc:answer>6</cc:answer>
+            <cc:answer correct="true">8</cc:answer>
+            <cc:answer>10</cc:answer>
+        </cc:question>
+        <cc:question score-max="9">
+            <cc:text>Welche der folgenden Tennisspieler/-innen haben mindestens einmal das Einzel-Tennisturnier in Wimbledon gewonnen?</cc:text>
+            <cc:answer>Kevin Curren</cc:answer>
+            <cc:answer correct="true">Goran Ivanišević</cc:answer>
+            <cc:answer correct="true">Andy Murray</cc:answer>
+            <cc:answer>Ivan Lendl</cc:answer>
+            <cc:answer correct="true">Stefan Edberg</cc:answer>
+            <cc:answer>Arantxa Sánchez Vicario</cc:answer>
+        </cc:question>
+    </cc:ground-truth>
+
+    <cc:target score-threshold="10">
+       
+        <!-- age linear -->
+        <cc:age score-max="5" score-min="2" score-dist="linear">
+            <cc:min>20</cc:min>
+            <cc:mean>25</cc:mean>
+            <cc:max>30</cc:max>
+        </cc:age>
+
+        <!-- time linear (no date) -->
+        <cc:time score-max="10" score-min="1" score-dist="linear">
+            <cc:min>13:00:00Z</cc:min>
+            <cc:mean>17:00:00Z</cc:mean>
+            <cc:max>21:00:00Z</cc:max>
+            <cc:exclude-weekdays>
+                <cc:weekday>Saturday</cc:weekday>
+                <cc:weekday>Sunday</cc:weekday>
+            </cc:exclude-weekdays>
+        </cc:time>
+
+        <!-- location linear -->
+        <cc:location score-max="10" score-dist="binary">
+            <cc:mean>
+                <cc:lat>43.014252</cc:lat>
+                <cc:lon>-3.209216</cc:lon>
+            </cc:mean>
+            <cc:max-distance>200</cc:max-distance>
+        </cc:location>
+
+        <!-- education binary -->
+        <cc:education score-dist="binary">
+            <cc:qualification name="none" score="0" />
+            <cc:qualification name="hauptschule" score="1" />
+            <cc:qualification name="mittlere_reife" score="1" />
+            <cc:qualification name="abitur" score="2" />
+            <cc:qualification name="ausbildung" score="2" />
+            <cc:qualification name="bachelor" score="5" />
+            <cc:qualification name="master" score="10" />
+            <cc:qualification name="promotion" score="15" />
+            <cc:qualification name="habilitation" score="15" />
+        </cc:education>
+
+        <!-- languages binary -->
+        <cc:languages score-dist="binary">
+            <cc:language code="es" score="10" />
+            <cc:language code="en" native="true" score="5" />
+            <cc:language code="pt" native="false" score="20" />
+        </cc:languages>
+
+        <!-- reward-points linear 1 -->
+        <cc:reward-points score-min="10" score-max="100" score-dist="linear">
+            <cc:min>20</cc:min>
+            <cc:mean>30</cc:mean>
+            <cc:max>100</cc:max>
+        </cc:reward-points>
+
+    </cc:target>
+
+    <cc:reward>
+        <cc:formula>($targetScore + $groundTruthScore) * 1.5</cc:formula>
+    </cc:reward>
+</cc:campaign>
