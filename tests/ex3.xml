@@ -39,7 +39,7 @@
         </cc:time>
 
         <!-- location linear -->
-        <cc:location score-max="10" score-dist="binary">
+        <cc:location score-min="2" score-max="10" score-dist="linear">
             <cc:mean>
                 <cc:lat>43.014252</cc:lat>
                 <cc:lon>-3.209216</cc:lon>

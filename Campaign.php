@@ -365,9 +365,38 @@ class Campaign {
 		}
 	}
 
+	public function getLocationScore($actualLocation) {
+		$locationElement = $this->target->location;
+
+		if (!$locationElement) {
+			return 0;
+		}
+
+		$targetedLatitude = floatval($locationElement->mean->lat);
+		$targetedLongitude = floatval($locationElement->mean->lon);
+		$targetedLocation = new Location($targetedLatitude, $targetedLongitude);
+		$maxDistance = floatval($locationElement->{'max-distance'});
+		$actualDistance = $targetedLocation->distanceTo($actualLocation);
+		$s_max = floatval($locationElement->attributes()->{'score-max'});
+
+		$applyLinearDistribution = strtolower($locationElement->attributes()->{'score-dist'}) === 'linear';
+		if ($applyLinearDistribution) {
+			$s_min = floatval($locationElement->attributes()->{'score-min'});
+
+			return $this->getGenericScoreForLinearDistribution($actualDistance, 0, 0, $maxDistance, $s_min, $s_max);
+		} else {
+			// binary score distribution
+			if ($actualDistance <= $maxDistance) {
+				return $s_max;
+			}
+		}
+
+		return 0;
+	}
+
 	public function getTargetScore() {
 		if (!$this->target) {
-			return NULL;
+			return false;
 		}
 
 

@@ -5,6 +5,7 @@ namespace CrowdsourcingCampaign\Test;
 include_once('Campaign.php');
 
 use \DateTime;
+use \CrowdsourcingCampaign\Executor\Location;
 
 class CampaignExecutionTestEX3 extends \PHPUnit_Framework_TestCase {
 
@@ -45,8 +46,8 @@ class CampaignExecutionTestEX3 extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testLocationDistance() {
-		$loc1 = new \CrowdsourcingCampaign\Executor\Location(43.314252, -3.009216);
-		$loc2 = new \CrowdsourcingCampaign\Executor\Location(43.014252, -3.209216);
+		$loc1 = new Location(43.314252, -3.009216);
+		$loc2 = new Location(43.014252, -3.209216);
 
 		$this->assertEquals(
 			37.13398,
@@ -65,13 +66,10 @@ class CampaignExecutionTestEX3 extends \PHPUnit_Framework_TestCase {
 	public function testLocationObfuscation() {
 		$lat_real = 43.314252;
 		$lon_real = -3.009216;
-		$loc_real = new \CrowdsourcingCampaign\Executor\Location($lat_real, $lon_real);
+		$loc_real = new Location($lat_real, $lon_real);
 		$iterations = 1000;
 		$maxRadius = 50;
 
-		$distanceGroups = array(
-			0 => 0, 1 => 0, 2 => 0, 3 => 0, 4 => 0
-		);
 		$latLessCount = 0;
 		$lonLessCount = 0;
 
@@ -84,18 +82,14 @@ class CampaignExecutionTestEX3 extends \PHPUnit_Framework_TestCase {
 			$this->assertNotEquals($loc_real->getLatitude(), $loc_obf->getLatitude());
 			$this->assertNotEquals($loc_real->getLongitude(), $loc_obf->getLongitude());
 
-			$distanceGroups[floor($distance / 10)] += 1;
 			$latLessCount += $lat_real - $loc_obf->getLatitude() > 0 ? 1 : 0;
 			$lonLessCount += $lon_real - $loc_obf->getLongitude() > 0 ? 1 : 0;
 		}
-
-		foreach ($distanceGroups as $group => $count) {
-			$this->assertGreaterThanOrEqual(1, $count, 'Distance group ' .
-				$group . ' has only ' . $count . ' element(s)');
-		}
 		
-		$this->assertGreaterThanOrEqual($iterations / 3, $latLessCount, 'Latitudes too often bigger');
-		$this->assertGreaterThanOrEqual($iterations / 3, $lonLessCount, 'Longitudes too often bigger');
+		$this->assertGreaterThanOrEqual($iterations / 3, $latLessCount, 'Latitudes too often greater');
+		$this->assertLessThanOrEqual($iterations * 2 / 3, $latLessCount, 'Latitudes too often less');
+		$this->assertGreaterThanOrEqual($iterations / 3, $lonLessCount, 'Longitudes too often greater');
+		$this->assertLessThanOrEqual($iterations * 2 / 3, $lonLessCount, 'Longitudes too often less');
 	}
 
 	public function testAgeScoring() {
@@ -118,6 +112,13 @@ class CampaignExecutionTestEX3 extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(0, $this->campaign->getTimeScore(new DateTime('2012-03-23 12:59:59')));
 		$this->assertEquals(0, $this->campaign->getTimeScore(new DateTime('2012-03-23 21:00:01')));
 		$this->assertEquals(0, $this->campaign->getTimeScore(new DateTime('2012-03-10 14:21:30')));
+	}
+
+	public function testLocationScoring() {
+		$this->assertEquals(10, $this->campaign->getLocationScore(new Location(43.014252, -3.209216)));
+		$this->assertNotEquals(10, $this->campaign->getLocationScore(new Location(41.314252, -3.309216)));
+		$this->assertNotEquals(0, $this->campaign->getLocationScore(new Location(41.314252, -3.309216)));
+		$this->assertEquals(0, $this->campaign->getLocationScore(new Location(62.314252, -15.309216)));
 	}
 
 }
