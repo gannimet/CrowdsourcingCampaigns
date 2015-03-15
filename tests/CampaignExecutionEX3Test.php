@@ -116,9 +116,29 @@ class CampaignExecutionTestEX3 extends \PHPUnit_Framework_TestCase {
 
 	public function testLocationScoring() {
 		$this->assertEquals(10, $this->campaign->getLocationScore(new Location(43.014252, -3.209216)));
-		$this->assertNotEquals(10, $this->campaign->getLocationScore(new Location(41.314252, -3.309216)));
-		$this->assertNotEquals(0, $this->campaign->getLocationScore(new Location(41.314252, -3.309216)));
+		$this->assertLessThan(10, $this->campaign->getLocationScore(new Location(41.314252, -3.309216)));
+		$this->assertGreaterThan(0, $this->campaign->getLocationScore(new Location(41.314252, -3.309216)));
 		$this->assertEquals(0, $this->campaign->getLocationScore(new Location(62.314252, -15.309216)));
+	}
+
+	public function testEducationScoring() {
+		$this->assertEquals(5, $this->campaign->getEducationScore('bachelor'));
+		$this->assertEquals(10, $this->campaign->getEducationScore('master'));
+		$this->assertEquals(0, $this->campaign->getEducationScore('none'));
+	}
+
+	public function testLanguagesScoring() {
+		$languages1 = array('es' => true, 'pt' => false);
+		$languages2 = array('en' => true);
+		$languages3 = array('en' => false);
+		$languages4 = array('en' => true, 'es' => false);
+		$languages5 = array('de' => true, 'pt' => false);
+
+		$this->assertEquals(30, $this->campaign->getLanguagesScore($languages1));
+		$this->assertEquals(5, $this->campaign->getLanguagesScore($languages2));
+		$this->assertEquals(0, $this->campaign->getLanguagesScore($languages3));
+		$this->assertEquals(15, $this->campaign->getLanguagesScore($languages4));
+		$this->assertEquals(20, $this->campaign->getLanguagesScore($languages5));
 	}
 
 }

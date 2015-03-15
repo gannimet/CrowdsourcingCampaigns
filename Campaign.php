@@ -394,6 +394,47 @@ class Campaign {
 		return 0;
 	}
 
+	public function getEducationScore($d) {
+		$educationElement = $this->target->education;
+
+		if (!$educationElement) {
+			return 0;
+		}
+
+		$educationScores = CampaignUtils::getQualificationScores($educationElement);
+
+		if (in_array($d, $educationScores)) {
+			return $educationScores[$d];
+		}
+
+		return 0;
+	}
+
+	public function getLanguagesScore($languages) {
+		$languagesElement = $this->target->languages;
+
+		if (!$languagesElement) {
+			return 0;
+		}
+
+		$languageScores = CampaignUtils::getLanguageScores($languagesElement);
+
+		$resultScore = 0;
+		foreach ($languages as $userLanguage => $userNative) {
+			if (array_key_exists($userLanguage, $languageScores)) {
+				$targetLanguage = $languageScores[$userLanguage];
+
+				if ($targetLanguage['native']) {
+					$resultScore += $userNative ? $targetLanguage['score'] : 0;
+				} else {
+					$resultScore += $targetLanguage['score'];
+				}
+			}
+		}
+
+		return $resultScore;
+	}
+
 	public function getTargetScore() {
 		if (!$this->target) {
 			return false;

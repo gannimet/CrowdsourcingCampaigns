@@ -56,6 +56,28 @@ class CampaignUtils {
 		return $result;
 	}
 
+	public static function getQualificationScores($educationElement) {
+		$result = array();
+		foreach ($educationElement->qualification as $qualification) {
+			$result[(string) $qualification->attributes()->name] = floatval($qualification->attributes()->score);
+		}
+
+		return $result;
+	}
+
+	public static function getLanguageScores($languagesElement) {
+		$result = array();
+		foreach ($languagesElement->language as $language) {
+			$code = (string) $language->attributes()->code;
+			$native = strtolower($language->attributes()->native) === 'true' ? true : false;
+			$score = floatval($language->attributes()->score);
+
+			$result[$code] = array('native' => $native, 'score' => $score);
+		}
+
+		return $result;
+	}
+
 }
 
 ?>
