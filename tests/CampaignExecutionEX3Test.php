@@ -141,6 +141,15 @@ class CampaignExecutionTestEX3 extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(20, $this->campaign->getLanguagesScore($languages5));
 	}
 
+	public function testRewardPointsScore() {
+		$this->assertEquals(73, $this->campaign->getRewardPointsScore(27));
+		$this->assertEquals(28, $this->campaign->getRewardPointsScore(86));
+		$this->assertEquals(10, $this->campaign->getRewardPointsScore(20));
+		$this->assertEquals(0, $this->campaign->getRewardPointsScore(19));
+		$this->assertEquals(10, $this->campaign->getRewardPointsScore(100));
+		$this->assertEquals(0, $this->campaign->getRewardPointsScore(101));
+	}
+
 }
 
 ?>

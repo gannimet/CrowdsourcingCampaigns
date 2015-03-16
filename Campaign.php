@@ -283,6 +283,14 @@ class Campaign {
 		return ($s_max - $s_min) / ($d_zentral - $d_max) * ($d - $d_max) + $s_min;
 	}
 
+	private function getGenericScoreForUnlimitedLinearDistribution($d, $d_min, $d_reference, $s_min, $s_reference) {
+		if ($d < $d_min) {
+			return 0;
+		}
+
+		return ($s_reference - $s_min) / ($d_reference - $d_min) * ($d - $d_min) + $s_min;
+	}
+
 	public function getAgeScore($d) {
 		$ageElement = $this->target->age;
 
@@ -433,6 +441,58 @@ class Campaign {
 		}
 
 		return $resultScore;
+	}
+
+	public function getRewardPointsScore($d) {
+		$rewardPointsElement = $this->target->{'reward-points'};
+
+		if (!$rewardPointsElement) {
+			return 0;
+		}
+
+		$d_min = floatval($rewardPointsElement->min);
+
+		$applyLinearDistribution = strtolower($rewardPointsElement->attributes()->{'score-dist'}) === 'linear';
+		if ($applyLinearDistribution) {
+			// linear distribution
+			$s_min = floatval($rewardPointsElement->attributes()->{'score-min'});
+
+			$useClassicalLinearDistribution = !!$rewardPointsElement->mean;
+			if ($useClassicalLinearDistribution) {
+				// good old linear distribution with min, mean and max
+				$d_zentral = floatval($rewardPointsElement->mean);
+				$d_max = floatval($rewardPointsElement->max);
+				$s_max = floatval($rewardPointsElement->attributes()->{'score-max'});
+
+				return $this->getGenericScoreForLinearDistribution($d, $d_min, $d_zentral, $d_max, $s_min, $s_max);
+			} else {
+				// extra special fancy linear distribution with reference
+				$d_reference = floatval($rewardPointsElement->reference);
+				$s_reference = floatval($rewardPointsElement->attributes()->{'score-reference'});
+
+				return $this->getGenericScoreForUnlimitedLinearDistribution($d, $d_min, $d_reference, $s_min, $s_reference);
+			}
+		} else {
+			// binary distribution
+			$s_max = floatval($rewardPointsElement->attributes()->{'score-max'});
+			$maxElement = $rewardPointsElement->max;
+
+			if ($maxElement) {
+				$d_max = floatval($maxElement);
+
+				if ($d < $d_min || $d > $d_max) {
+					return 0;
+				}
+
+				return $s_max;
+			}
+
+			if ($d < $d_min) {
+				return 0;
+			}
+
+			return $s_max;
+		}
 	}
 
 	public function getTargetScore() {
