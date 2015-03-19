@@ -1,6 +1,6 @@
 <?php
 
-namespace CrowdsourcingCampaign\Utils;
+namespace CrowdsourcingCampaign;
 
 class CampaignUtils {
 
@@ -72,7 +72,17 @@ class CampaignUtils {
 			$native = strtolower($language->attributes()->native) === 'true' ? true : false;
 			$score = floatval($language->attributes()->score);
 
-			$result[$code] = array('native' => $native, 'score' => $score);
+			if (array_key_exists($code, $result)) {
+				$result[$code] = array(
+					'native' => $native ? $score : $result[$code]['native'],
+					'non-native' => !$native ? $score : $result[$code]['non-native']
+				);
+			} else {
+				$result[$code] = array(
+					'native' => $score,
+					'non-native' => !$native ? $score : 0
+				);
+			}
 		}
 
 		return $result;

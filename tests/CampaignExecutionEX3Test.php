@@ -5,7 +5,7 @@ namespace CrowdsourcingCampaign\Test;
 include_once('Campaign.php');
 
 use \DateTime;
-use \CrowdsourcingCampaign\Executor\Location;
+use \CrowdsourcingCampaign\Location;
 
 class CampaignExecutionTestEX3 extends \PHPUnit_Framework_TestCase {
 
@@ -13,7 +13,7 @@ class CampaignExecutionTestEX3 extends \PHPUnit_Framework_TestCase {
 
 	public function setUp() {
 		date_default_timezone_set('Europe/Berlin');
-		$this->campaign = new \CrowdsourcingCampaign\Executor\Campaign($_SERVER['PWD'] . '/tests/ex3.xml');
+		$this->campaign = new \CrowdsourcingCampaign\Campaign($_SERVER['PWD'] . '/tests/ex3.xml');
 	}
 
 	public function testSingleGroundTruthScoring() {

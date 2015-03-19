@@ -4,7 +4,7 @@ namespace CrowdsourcingCampaign\Test;
 
 include_once('CampaignUtils.php');
 
-use CrowdsourcingCampaign\Utils\CampaignUtils;
+use CrowdsourcingCampaign\CampaignUtils;
 use \DateTime;
 
 class CampaignUtilsTest extends \PHPUnit_Framework_TestCase {

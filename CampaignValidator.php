@@ -1,10 +1,8 @@
 <?php
 
-namespace CrowdsourcingCampaign\Validator;
+namespace CrowdsourcingCampaign;
 
 include_once('CampaignUtils.php');
-
-use \CrowdsourcingCampaign\Utils\CampaignUtils;
 
 class ValidationResult {
 
@@ -65,7 +63,7 @@ class CampaignValidator {
 			$this->checkRewardFormula()
 		);
 
-		$errorList = array_reduce($validity, array("\CrowdsourcingCampaign\Utils\CampaignUtils", "stripTrues"), array());
+		$errorList = array_reduce($validity, array("CrowdsourcingCampaign\CampaignUtils", "stripTrues"), array());
 
 		if (empty($errorList)) {
 			return new ValidationResult(true);

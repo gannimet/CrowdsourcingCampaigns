@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cc:campaign xmlns:cc="http://rn.inf.tu-dresden.de/SANE" start-date="2015-03-14" end-date="2015-03-30">
+    <cc:target score-threshold="10">
+       
+        <!-- age binary -->
+        <cc:age score-max="2" score-dist="binary">
+            <cc:min>20</cc:min>
+            <cc:max>30</cc:max>
+        </cc:age>
+
+        <!-- time linear (date) -->
+        <cc:time score-max="3" score-min="1" score-dist="linear">
+            <cc:min>2015-03-20T13:00:00Z</cc:min>
+            <cc:mean>2015-03-20T17:00:00Z</cc:mean>
+            <cc:max>2015-03-20T21:00:00Z</cc:max>
+            <cc:exclude-weekdays>
+                <cc:weekday>Saturday</cc:weekday>
+                <cc:weekday>Sunday</cc:weekday>
+            </cc:exclude-weekdays>
+        </cc:time>
+
+        <!-- location binary -->
+        <cc:location score-max="4" score-dist="binary">
+            <cc:mean>
+                <cc:lat>43.014252</cc:lat>
+                <cc:lon>-3.209216</cc:lon>
+            </cc:mean>
+            <cc:max-distance>200</cc:max-distance>
+        </cc:location>
+
+        <!-- education binary -->
+        <cc:education>
+            <cc:qualification name="promotion" score="15" />
+            <cc:qualification name="habilitation" score="15" />
+        </cc:education>
+
+        <!-- languages binary -->
+        <cc:languages>
+            <cc:language code="es" native="true" score="10" />
+            <cc:language code="es" native="false" score="5" />
+        </cc:languages>
+
+        <!-- reward-points linear 2 -->
+        <cc:reward-points score-min="2" score-reference="3" score-dist="linear">
+            <cc:min>10</cc:min>
+            <cc:reference>20</cc:reference>
+        </cc:reward-points>
+
+    </cc:target>
+
+    <cc:reward>
+        <cc:formula>$targetScore * 1.5</cc:formula>
+    </cc:reward>
+</cc:campaign>

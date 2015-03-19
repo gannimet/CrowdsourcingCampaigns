@@ -1,10 +1,10 @@
 <?php
 
-namespace CrowdsourcingCampaign\Executor;
+namespace CrowdsourcingCampaign;
 
 include_once('CampaignUtils.php');
 
-use \CrowdsourcingCampaign\Utils\CampaignUtils;
+use \DateTime;
 
 class GroundTruthAnswer {
 
@@ -212,19 +212,20 @@ class Campaign {
 
 	public function getGroundTruthScoreForQuestion($id, $checkedAnswers) {
 		$question = $this->getGroundTruthQuestion($id);
+		$answers = $question->getAnswers();
 
 		// Max score
 		$s_max = $question->getScore();
 		// Number of correct answers
 		$c_max = 0; // to be determined
 		// Number of answer options
-		$a_max = count($question->getAnswers());
+		$a_max = count($answers);
 		// Number of checked answers
 		$a_gew = count($checkedAnswers);
 		// Number of correctly checked answers
 		$c_gew = 0; // to be determined
 
-		foreach ($question->getAnswers() as $answer) {
+		foreach ($answers as $answer) {
 			if ($answer->isCorrect()) {
 				$c_max++;
 
@@ -332,6 +333,7 @@ class Campaign {
 			$discriminatorWeekday = CampaignUtils::getWeekdayName($actualTime);
 
 			if (in_array($discriminatorWeekday, $excludedWeekdays)) {
+				// Weekday should be excluded, so score of zero
 				return 0;
 			}
 		}
@@ -411,7 +413,7 @@ class Campaign {
 
 		$educationScores = CampaignUtils::getQualificationScores($educationElement);
 
-		if (in_array($d, $educationScores)) {
+		if (array_key_exists($d, $educationScores)) {
 			return $educationScores[$d];
 		}
 
@@ -429,14 +431,12 @@ class Campaign {
 
 		$resultScore = 0;
 		foreach ($languages as $userLanguage => $userNative) {
+			// for each language the user speaks …
 			if (array_key_exists($userLanguage, $languageScores)) {
+				// check whether it should be scored
 				$targetLanguage = $languageScores[$userLanguage];
 
-				if ($targetLanguage['native']) {
-					$resultScore += $userNative ? $targetLanguage['score'] : 0;
-				} else {
-					$resultScore += $targetLanguage['score'];
-				}
+				$resultScore += $userNative ? $targetLanguage['native'] : $targetLanguage['non-native'];
 			}
 		}
 
@@ -495,12 +495,24 @@ class Campaign {
 		}
 	}
 
-	public function getTargetScore() {
+	public function getTargetScore($age, $time, $location, $qualification, $languages, $rewardPoints) {
 		if (!$this->target) {
-			return false;
+			return NULL;
 		}
 
+		$ageScore = $age !== NULL ? $this->getAgeScore($age) : 0;
+		$timeScore = $time !== NULL ? $this->getTimeScore($time) : 0;
+		$locationScore = $location !== NULL ? $this->getLocationScore($location) : 0;
+		$educationScore = $qualification !== NULL ? $this->getEducationScore($qualification) : 0;
+		$languagesScore = $languages !== NULL ? $this->getLanguagesScore($languages) : 0;
+		$rewardPointsScore = $rewardPoints != NULL ? $this->getRewardPointsScore($rewardPoints) : 0;
 
+		$result = $ageScore + $timeScore + $locationScore +
+			$educationScore + $languagesScore + $rewardPointsScore;
+
+		$threshold = floatval($this->target->attributes()->{'score-threshold'});
+
+		return $result >= $threshold ? $result : 0;
 	}
 
 }
