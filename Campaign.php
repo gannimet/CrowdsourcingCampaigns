@@ -515,6 +515,47 @@ class Campaign {
 		return $result >= $threshold ? $result : 0;
 	}
 
+	public function getRewardPoints($groundTruthScore, $targetScore) {
+		if (!$this->hasReward()) {
+			return 0;
+		}
+
+		$formula = (string) $this->reward->formula;
+		
+		// Quotation characters inside the formula are invalid
+		if (CampaignUtils::doesFormulaContainQuotes($formula)) {
+			throw 'A quotation mark appears inside the reward formula.';
+		}
+
+		$allowedIdentifiers = array();
+		if ($this->hasTarget()) {
+			$allowedIdentifiers[] = 'targetScore';
+		}
+		if ($this->hasGroundTruth()) {
+			$allowedIdentifiers[] = 'groundTruthScore';
+		}
+
+		$nonAllowedIdentifiers = CampaignUtils::getNonAllowedIdentifiersInFormula($formula, $allowedIdentifiers);
+		if (!empty($nonAllowedIdentifiers)) {
+			throw 'There are non-allowed identifiers in the reward formula.';
+		}
+
+		// Execute the formula
+		ob_start();
+		$evalResult = eval("\$formulaResult = $formula;");
+
+		if ('' !== ob_get_clean()) {
+			// error on eval
+			throw 'The reward formula is not evaluable.';
+		}
+
+		if (!is_numeric($formulaResult)) {
+			throw 'The result of the reward formula is not numeric.';
+		}
+
+		return $formulaResult;
+	}
+
 }
 
 ?>

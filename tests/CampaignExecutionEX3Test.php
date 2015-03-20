@@ -150,6 +150,12 @@ class CampaignExecutionTestEX3 extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(0, $this->campaign->getRewardPointsScore(101));
 	}
 
+	public function testRewardPointsCalculation() {
+		$this->assertEquals(60, $this->campaign->getRewardPoints(10, 20));
+		$this->assertEquals(0, $this->campaign->getRewardPoints(0, 0));
+		$this->assertEquals(30, $this->campaign->getRewardPoints(5, 10));
+	}
+
 }
 
 ?>

@@ -87,6 +87,19 @@ class CampaignExecutionTestEX1 extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(65, $this->campaign->getTargetScore(
 			$perfectAge, $perfectTime, $perfectLocation, $perfectEducation, $perfectLanguages, $perfectRewardPoints));
+
+		$imperfectLanguages = array('es' => false);
+
+		$this->assertEquals(0, $this->campaign->getTargetScore(
+			NULL, NULL, NULL, NULL, $imperfectLanguages, 12));
+		$this->assertEquals(11, $this->campaign->getTargetScore(
+			NULL, NULL, NULL, NULL, $imperfectLanguages, 50));
+	}
+
+	public function testRewardPointsCalculation() {
+		$this->assertEquals(30, $this->campaign->getRewardPoints(NULL, 20));
+		$this->assertEquals(0, $this->campaign->getRewardPoints(NULL, 0));
+		$this->assertEquals(15, $this->campaign->getRewardPoints(5, 10));
 	}
 
 }

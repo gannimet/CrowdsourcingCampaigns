@@ -88,6 +88,25 @@ class CampaignUtils {
 		return $result;
 	}
 
+	public static function doesFormulaContainQuotes($formula) {
+		return strpos($formula, '\'') !== false || strpos($formula, '"') !== false;
+	}
+
+	public static function getNonAllowedIdentifiersInFormula($formula, $allowedIdentifiers) {
+		// Find all identifiers inside the formula
+		preg_match_all("/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/", $formula, $hits);
+		$identifiersInFormula = $hits[0];
+
+		$result = array();
+		foreach ($identifiersInFormula as $identifier) {
+			if (!in_array($identifier, $allowedIdentifiers)) {
+				$result[] = $identifier;
+			}
+		}
+
+		return $result;
+	}
+
 }
 
 ?>

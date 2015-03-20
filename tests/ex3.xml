@@ -77,6 +77,6 @@
     </cc:target>
 
     <cc:reward>
-        <cc:formula>($targetScore + $groundTruthScore) * 1.5</cc:formula>
+        <cc:formula>($targetScore + $groundTruthScore) * 2</cc:formula>
     </cc:reward>
 </cc:campaign>

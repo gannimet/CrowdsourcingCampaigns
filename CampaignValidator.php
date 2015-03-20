@@ -531,15 +531,21 @@ class CampaignValidator {
 		$formula = (string) $this->reward->formula;
 		
 		// Quotation characters inside the formula are invalid
-		if (strpos($formula, '\'') !== false || strpos($formula, '"') !== false) {
+		if (CampaignUtils::doesFormulaContainQuotes($formula)) {
 			return 'A quotation mark appears inside the reward formula.';
 		}
 
-		// Find all identifiers inside the formula
-		preg_match_all("/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/", $formula, $hits);
-		$identifiersInFormula = $hits[0];
+		$allowedIdentifiers = array();
+		if ($this->target) {
+			$allowedIdentifiers[] = 'targetScore';
+		}
+		if ($this->groundTruth) {
+			$allowedIdentifiers[] = 'groundTruthScore';
+		}
 
-		foreach ($identifiersInFormula as $identifier) {
+		$nonAllowedIdentifiers = CampaignUtils::getNonAllowedIdentifiersInFormula($formula, $allowedIdentifiers);
+
+		foreach ($nonAllowedIdentifiers as $identifier) {
 			if ($identifier !== 'targetScore' && $identifier !== 'groundTruthScore') {
 				// illegal string occurred
 				return 'An identifier or keyword other than "targetScore" or "groundTruthScore" ' .
